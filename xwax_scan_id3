@@ -1,0 +1,38 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import string
+import tagpy
+
+# walk through all sub directories
+def walk_path(path):
+	filelist = os.listdir(path)
+	for file in filelist:
+		if not os.path.isfile(os.path.join(path, file)):
+			walk_path(os.path.join(path, file))
+		else:
+			list_file(path, file)
+
+# print file in format <pathname>\t<folder>\t<artist>\t<title>\n
+# Crates are Comma separated! A comma in cratename will cause disaster
+def list_file(path, file):
+	filename = os.path.join(path, file)
+
+	try:
+		f = tagpy.FileRef(filename)
+		tags = f.tag()
+		crates = "ALL"
+		#if tags.genre != "":
+			#crates += "," + tags.genre.strip().replace(" ", "")
+		if tags.album != "":
+			crates += "," + tags.album.strip()
+
+		output = filename + "\t" + tags.artist + "\t" + tags.title
+		print output
+	except:
+		return;
+
+# start scanning...
+walk_path(sys.argv[1])
